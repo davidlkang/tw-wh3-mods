@@ -1,0 +1,4 @@
+deactivate_flag	special_ability
+#special_ability_to_auto_deactivate_flags_tables;0;db/special_ability_to_auto_deactivate_flags_tables/lw_slayers_data__	
+health_below_75%	wh2_dlc15_unit_passive_journeys_end
+health_below_25%	wh2_dlc15_unit_passive_journeys_end_lw

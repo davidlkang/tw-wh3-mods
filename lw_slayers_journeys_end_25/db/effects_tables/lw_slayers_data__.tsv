@@ -1,0 +1,3 @@
+effect	icon	priority	icon_negative	category	is_positive_value_good
+#effects_tables;0;db/effects_tables/lw_slayers_data__					
+wh2_dlc15_unit_ability_journeys_end_slayers	general_ability.png	600	general_ability.png	battle	true
