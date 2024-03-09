@@ -1,8 +1,28 @@
-local dwarven_holds = require("script/campaign/mod/hold_names")
+local run_every_start_up = false
 local dwarf_culture = "wh_main_sc_dwf_dwarfs"
-local settings = {
-    run_every_start_up = false,
-}
+local dwarf_holds
+
+
+local function check_campaign_compatibility()
+    local campaign_name = cm:model():campaign_name_key()
+    local running_suported_campaign
+
+    if campaign_name == "wh3_main_combi" then
+        running_suported_campaign = true
+        dwarf_holds = require("script/campaign/mod/hold_names_ie")
+    elseif campaign_name == "cr_combi_expanded" then
+        running_suported_campaign = true
+        dwarf_holds = require("script/campaign/mod/hold_names_ie")
+    elseif campaign_name == "cr_oldworld" then
+        running_suported_campaign = true
+        dwarf_holds = require("script/campaign/mod/hold_names_tow")
+    else
+        running_suported_campaign = false
+        out("You are running a campaign different then IE or TOW. This mod only works with these campaigns.")
+    end
+
+    return running_suported_campaign
+end
 
 
 local function check_if_dwarf_player(faction)
@@ -16,7 +36,7 @@ end
 
 
 local function rename_new_hold(region)
-    local new_region_name = dwarven_holds[region:name()]
+    local new_region_name = dwarf_holds[region:name()]
 
     if new_region_name then
         cm:change_custom_settlement_name(region:settlement(), new_region_name)
@@ -29,7 +49,7 @@ local function rename_owned_holds(player_faction)
     local number_of_regions = region_list:num_items()
 
     for i = 0, number_of_regions - 1 do
-        local new_region_name = dwarven_holds[region_list:item_at(i):name()]
+        local new_region_name = dwarf_holds[region_list:item_at(i):name()]
 
         if new_region_name then
             cm:change_custom_settlement_name(region_list:item_at(i):settlement(), new_region_name)
@@ -55,10 +75,29 @@ local function add_dwarf_hold_listener()
 end
 
 
+local function add_mct_finalized_listener()
+    core:add_listener(
+        "RrhMctFinalized",
+        "MctFinalized",
+        true,
+        function(context)
+            local mct = context:mct()
+            local mod = mct:get_mod_by_key("lw_rename_reclaimed_holds")
+
+            if mod:get_option_by_key("lw_rename_on_every_start_up"):get_finalized_setting() then
+                rename_owned_holds(cm:get_local_faction())
+            end
+        end,
+        true
+    )
+end
+
+
 local function init()
     local has_not_renamed_owned_holds = not cm:get_saved_value("has_renamed_owned_holds")
     local player_faction = cm:get_local_faction()
-    local run_every_start_up = settings.run_every_start_up
+
+    add_mct_finalized_listener()
 
     if player_faction:subculture() == dwarf_culture then
         add_dwarf_hold_listener()
@@ -78,27 +117,7 @@ core:add_listener(
         local mct = context:mct()
         local mod = mct:get_mod_by_key("lw_rename_reclaimed_holds")
 
-        local run_every_start_up = mod:get_option_by_key("lw_rename_on_every_start_up")
-:get_finalized_setting()
-        settings.run_every_start_up = run_every_start_up
-    end,
-    true
-)
-
-
-core:add_listener(
-    "RrhMctFinalized",
-    "MctFinalized",
-    true,
-    function(context)
-        local mct = context:mct()
-        local mod = mct:get_mod_by_key("lw_rename_reclaimed_holds")
-
-        local run_every_start_up = mod:get_option_by_key("lw_rename_on_every_start_up"):get_finalized_setting()
-
-        if run_every_start_up then
-            rename_owned_holds(cm:get_local_faction())
-        end
+        run_every_start_up = mod:get_option_by_key("lw_rename_on_every_start_up"):get_finalized_setting()
     end,
     true
 )
@@ -106,6 +125,8 @@ core:add_listener(
 
 cm:add_first_tick_callback(
     function()
-        init()
+        if check_campaign_compatibility() then
+            init()
+        end
     end
 )

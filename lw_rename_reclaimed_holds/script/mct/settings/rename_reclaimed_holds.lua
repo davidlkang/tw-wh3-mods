@@ -9,7 +9,7 @@ local mod_settings = {
 local run_every_start_up_settings = {
     name = "run_every_start_up",
     default_value = false,
-    text = "Rename on every session start",
+    text = "Rename now and on every session start",
     tooltip_text = "Whether the script to rename owned settlements should run every time " ..
         "the campaign is launched. Disable if you want to keep your custom settlement " ..
         "names. Enable if you want to have the latest update, as by default the mod " ..

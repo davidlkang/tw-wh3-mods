@@ -1,4 +1,4 @@
-local hold_names = {
+local hold_names_tow = {
     ["cr_oldworld_region_pillars_of_grungni"] = "Khaz Grungni",
     ["cr_oldworld_region_worlds_edge_archway"] = "Karag Garaz",
     ["cr_oldworld_region_moonstone_mountain"] = "Karak Lhuneduraz",
@@ -122,4 +122,4 @@ local hold_names = {
     ["cr_oldworld_region_siernos"] = "Drong Tusk",
 }
 
-return hold_names
+return hold_names_tow
